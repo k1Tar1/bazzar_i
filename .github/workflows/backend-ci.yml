@@ -8,9 +8,16 @@ jobs:
   test:
 
     runs-on: ubuntu-latest
-
+    env:
+        POSTGRES_DB: bazzari
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        DJANGO_SECRET_KEY: 2026
+        DEBUG: True
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
     steps:
-
+      
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
@@ -24,12 +31,3 @@ jobs:
       - run: |
           cd backend
           python manage.py check
-      
-      env:
-        POSTGRES_DB: bazzari
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: postgres
-        DJANGO_SECRET_KEY: 2026
-        DEBUG: True
-        POSTGRES_HOST: localhost
-        POSTGRES_PORT: 5432
