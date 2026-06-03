@@ -24,3 +24,12 @@ jobs:
       - run: |
           cd backend
           python manage.py check
+      
+      env:
+        POSTGRES_DB: bazzari
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        DJANGO_SECRET_KEY: 2026
+        DEBUG: True
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
