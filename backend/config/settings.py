@@ -41,6 +41,22 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
+    # Domain Apps
+    'apps.catalog.categories',
+    'apps.catalog.products',
+    'apps.commerce.carts',
+    'apps.commerce.checkout',
+    'apps.commerce.orders',
+    'apps.engagement.notifications',
+    'apps.engagement.reviews',
+    'apps.engagement.wishlists',
+    'apps.identity.accounts',
+    'apps.identity.authentication',
+    'apps.identity.seller',
+    'apps.identity.subscriptions',
+    'apps.store.shipping',
+    'apps.store.stores',
+    'apps.support.tickets',
 ]
 
 MIDDLEWARE = [
@@ -106,6 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'accounts.User'
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
