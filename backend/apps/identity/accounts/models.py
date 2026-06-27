@@ -1,16 +1,32 @@
+from enum import unique
 import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.auth.models import Group
 
 class Wilaya(models.Model):
-    code = models.CharField(max_length=2, primary_key=True)
+    id = models.BigAutoField(
+        primary_key=True,
+        auto_created=True
+    )
+    code = models.CharField(
+        max_length=2,
+        unique=True
+    )
     name_fr = models.CharField(max_length=100)
     name_ar = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.name_fr
+
+class verification_demand(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, unique = True)
+    token = models.CharField(max_length=64)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.user.email
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -32,6 +48,13 @@ class UserManager(BaseUserManager):
             raise ValueError('Superuser must have is_superuser=True.')
 
         return self.create_user(email, password, **extra_fields)
+    
+    def verified(self):
+        return self.filter(is_verified=True)
+
+    def unverified(self):
+        return self.filter(is_verified=False)
+
 
 class User(AbstractUser):
     id = models.UUIDField(
