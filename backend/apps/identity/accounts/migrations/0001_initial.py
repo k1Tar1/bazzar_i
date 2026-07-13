@@ -20,7 +20,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Wilaya',
             fields=[
-                ('code', models.CharField(max_length=2, primary_key=True, serialize=False)),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('code', models.PositiveIntegerField(unique=True)),
                 ('name_fr', models.CharField(max_length=100)),
                 ('name_ar', models.CharField(max_length=100)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
