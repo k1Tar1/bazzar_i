@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'core',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
+    'corsheaders',
     # Domain Apps
     'apps.catalog.categories',
     'apps.catalog.products',
@@ -72,6 +73,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -142,6 +144,10 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/

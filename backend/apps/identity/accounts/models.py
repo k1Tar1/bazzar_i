@@ -69,11 +69,12 @@ class UserManager(DjangoUserManager):
             raise ValueError('Superuser must have is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
+        user = self.create_user(email, password, **extra_fields)
         seller_group, _ = Group.objects.get_or_create(name="Seller")
         admin_group, _ = Group.objects.get_or_create(name="Admin")
         user.groups.add(seller_group)
         user.groups.add(admin_group)
-        return self.create_user(email, password, **extra_fields)
+        return user
 
 
 class User(AbstractUser):
