@@ -1,10 +1,15 @@
-import Button from "../components/ui/Button";
-import Input from "../components/ui/Input";
-import Checkbox from "../components/ui/Checkbox";
-import Alert from "../components/ui/Alert";
-import { Mail, Plus, ArrowRight } from "lucide-react";
+import { Button, Input, Checkbox, Alert, Card, Divider, Select } from "../components/ui/index";
+import { Mail, Plus, ArrowRight, Star, MapPinned } from "lucide-react";
 
 export default function ComponentGallery() {
+
+    const wilayas = [
+        { value: "01", label: "Adrar" },
+        { value: "02", label: "Chlef" },
+        { value: "03", label: "Laghouat" },
+        { value: "04", label: "Oum El Bouaghi" },
+    ];
+
     return (
         <div className="space-y-12 p-8">
 
@@ -116,6 +121,37 @@ export default function ComponentGallery() {
                 </div>
 
                 <h2 className="text-2xl font-semibold">
+                    Selects
+                </h2>
+
+                <div className="space-y-6 max-w-md">
+
+                    <Select
+                        label="Wilaya"
+                        options={wilayas}
+                    />
+
+                    <Select
+                        label="With Helper"
+                        helperText="Select your current wilaya."
+                        options={wilayas}
+                    />
+
+                    <Select
+                        label="Error"
+                        error="Required field."
+                        options={wilayas}
+                    />
+
+                    <Select
+                        label="Disabled"
+                        disabled
+                        options={wilayas}
+                    />
+
+                </div>
+
+                <h2 className="text-2xl font-semibold">
                     Alerts
                 </h2>
 
@@ -152,6 +188,91 @@ export default function ComponentGallery() {
 
                 </div>
 
+                <h2 className="text-2xl font-semibold">
+                    Cards
+                </h2>
+
+                <div className="space-y-6">
+
+                    <Card title="Simple Card">
+                        Basic card content.
+                    </Card>
+
+                    <Card
+                        title="Hover Card"
+                        subtitle="Hover over this card."
+                        hover
+                    >
+                        Content
+                    </Card>
+
+                    <Card
+                        title="With Footer"
+                        footer={
+                            <Button>
+                                Save
+                            </Button>
+                        }
+                    >
+                        Card body
+                    </Card>
+
+                    <Card
+                        header={
+                            <div className="flex items-center justify-between">
+
+                                <h2 className="text-lg font-semibold">
+                                    Recent Orders
+                                </h2>
+
+                                <Button size="sm">
+                                    View All
+                                </Button>
+
+                            </div>
+                        }
+                    >
+                        ...
+                    </Card>
+
+                </div>
+
+                <h2 className="text-2xl font-semibold">
+                    Dividers
+                </h2>
+
+                <div className="space-y-8">
+
+                    <Divider />
+
+                    <Divider>
+                        OR
+                    </Divider>
+
+                    <Divider>
+                        Login
+                    </Divider>
+
+                    <Divider>
+                        Step 2
+                    </Divider>
+
+                    <Divider>
+                        <Star size={16} />
+                    </Divider>
+                </div>
+
+                <div className="flex h-8 items-center gap-4 justify-center">
+                    <span>Profile</span>
+
+                    <Divider orientation="vertical" />
+
+                    <span>Settings</span>
+
+                    <Divider orientation="vertical" />
+
+                    <span>Logout</span>
+                </div>
             </section>
 
 

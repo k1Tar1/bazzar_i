@@ -1,17 +1,10 @@
-import {
-    Button,
-    Spinner,
-    Input,
-    Checkbox,
-    PasswordInput,
-    Alert,
-} from "./"
-
-export {
-    Button,
-    Spinner,
-    Input,
-    Checkbox,
-    PasswordInput,
-    Alert,
-};
+export { default as Button } from "./Button";
+export { default as Spinner } from "./Spinner";
+export { default as Input } from "./Input";
+export { default as Checkbox } from "./Checkbox";
+export { default as PasswordInput } from "./PasswordInput";
+export { default as Alert } from "./Alert";
+export { default as Divider } from "./Divider";
+export { default as Card } from "./Card";
+export { default as Logo } from "./Logo";
+export { default as Select } from "./Select";
