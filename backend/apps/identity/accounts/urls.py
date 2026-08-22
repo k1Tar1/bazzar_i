@@ -1,3 +1,4 @@
+from apps.identity.accounts.views import VerifyEmailView
 from apps.identity.accounts.views import LogoutView
 from rest_framework_simplejwt.views import TokenRefreshView
 from apps.identity.accounts.views import LoginView
@@ -30,5 +31,10 @@ urlpatterns = [
         "logout/",
         LogoutView.as_view(),
         name="logout",
+    ),
+    path(
+        "verify-email/",
+        VerifyEmailView.as_view(),
+        name="verify-email",
     ),
 ]

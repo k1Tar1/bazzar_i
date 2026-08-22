@@ -41,3 +41,38 @@ export function verifyEmail(uid, token) {
         }
     );
 }
+
+export function resendVerification(email) {
+    return client.post(
+        "/auth/resend-verification/",
+        {
+            email,
+        }
+    );
+}
+
+export function forgotPassword(email) {
+    return client.post(
+        "/auth/forgot-password/",
+        {
+            email,
+        }
+    );
+}
+
+export function resetPassword({
+    uid,
+    token,
+    password,
+    confirm_password,
+}) {
+    return client.post(
+        "/auth/reset-password/",
+        {
+            uid,
+            token,
+            password,
+            confirm_password,
+        }
+    );
+}

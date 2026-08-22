@@ -35,7 +35,7 @@ export default function validateRegister(form) {
         // +213XXXXXXXXX
         // 0XXXXXXXXX
         const phoneRegex =
-            /^(\+213|0)(5|6|7)[0-9]{8}$/;
+            /^(\+213|213|0)(5|6|7)[0-9]{8}$/;
 
         if (!phoneRegex.test(form.phone)) {
             errors.phone = "Enter a valid Algerian phone number.";

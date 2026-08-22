@@ -13,11 +13,25 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 import environ
 from datetime import timedelta
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+FRONTEND_URL = "http://localhost:5173"
+
+DEFAULT_FROM_EMAIL = "noreply@example.com"
+
+EMAIL_HOST_USER = "k1t1dup@gmail.com"
+EMAIL_HOST_PASSWORD = "qijp qbxz iaeh gech"
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_HOST = "smtp.gmail.com"   
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = "noreply@bazzari.com"
 
 env = environ.Env()
 environ.Env.read_env(BASE_DIR.parent / ".env")

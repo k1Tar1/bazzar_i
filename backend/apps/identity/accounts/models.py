@@ -1,5 +1,6 @@
 from enum import unique
 import uuid
+from apps.identity.accounts.validators import validate_phone
 from django.db.models import F
 from django.db import models
 from django.conf import settings
@@ -32,7 +33,7 @@ class Wilaya(models.Model):
     objects = WilayaManager()
 
     def __str__(self):
-        return self.name_fr
+        return f"{self.code} - {self.name_fr}"
 
 class UserManager(DjangoUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -107,13 +108,22 @@ class User(AbstractUser):
         null=True, 
         blank=True
     )
-    phone = models.CharField(max_length=10, blank=False)
+    phone = models.CharField(max_length=12, blank=False)
     address = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_email_verified = models.BooleanField(default=False)
     def __str__(self):
         return self.email
+
+    @property
+    def is_admin(self):
+        return self.is_staff or self.is_superuser or self.groups.filter(name="Admin").exists()
+
+    @property
+    def is_seller(self):
+        return hasattr(self, "seller_profile") or self.groups.filter(name="Seller").exists()
+
 
 class SellerProfile(models.Model):
     class VerificationStatus(models.TextChoices):

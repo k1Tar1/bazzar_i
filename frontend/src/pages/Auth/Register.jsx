@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { register } from "../api/auth";
+import { register } from "../../api/auth";
 import {
     Mail,
     User,
@@ -16,17 +16,19 @@ import {
     Input,
     Alert,
     Select,
-} from "../components/ui/index";
+} from "../../components/ui/index";
 
 import {
     AuthLayout,
     AuthHeader,
     AuthFooter,
-} from "../components/layouts";
+} from "../../components/layouts";
 
-import { WILAYAS } from "../constants/wilayas";
+import { WILAYAS } from "../../constants/wilayas";
 
-import validateRegister from "../validation/registerValidation";
+import validateRegister from "../../validation/registerValidation";
+
+import mapBackendErrors from "../../utils/mapBackendErrors";
 
 export default function Register() {
     const [form, setForm] = useState({
@@ -46,6 +48,20 @@ export default function Register() {
     const [error, setError] = useState({});
 
     const [formError, setFormError] = useState("");
+
+    function normalizePhoneNumber(phone) {
+        const cleaned = phone.replace(/\s+/g, "");
+
+        if (cleaned.startsWith("0")) {
+            return "213" + cleaned.slice(1);
+        }
+
+        if (cleaned.startsWith("+213")) {
+            return cleaned.slice(1);
+        }
+
+        return cleaned;
+    }
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -71,35 +87,33 @@ export default function Register() {
         setError({});
         setFormError("");
 
+        const payload = {
+            first_name: form.first_name,
+            last_name: form.last_name,
+            email: form.email,
+            phone: normalizePhoneNumber(form.phone),
+            wilaya: form.wilaya,
+            address: form.address,
+            password: form.password,
+        };
+
         try {
             setLoading(true);
 
-            const response = await register(form);
+            const response = await register(payload);
 
             console.log(response.data);
 
-            // Later:
-            // navigate("/check-email");
-            console.log(form);
+            navigate("/check-email", {
+                state: {
+                    email: payload.email,
+                },
+            });
         } catch (error) {
             if (error.response?.status === 400) {
-
-                const backendErrors = {};
-
-                for (const key in error.response.data) {
-
-                    backendErrors[key] =
-                        error.response.data[key][0];
-                }
-
-                setError(backendErrors);
-
+                setError(mapBackendErrors(error.response.data));
             } else {
-
-                setFormError(
-                    "Something went wrong. Please try again."
-                );
-
+                setFormError("Something went wrong. Please try again.");
             }
         } finally {
             setLoading(false);

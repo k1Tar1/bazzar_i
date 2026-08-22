@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
-from .serializers import RegisterSerializer, LoginSerializer
+from .serializers import RegisterSerializer, LoginSerializer, VerifyEmailSerializer, ResendVerificationSerializer
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -41,4 +41,51 @@ class LogoutView(APIView):
         return Response(
             {"message": "Logged out successfully."},
             status=status.HTTP_205_RESET_CONTENT,
+        )
+
+class VerifyEmailView(APIView):
+
+    authentication_classes = []
+
+    permission_classes = []
+
+    def post(self, request):
+
+        serializer = VerifyEmailSerializer(
+            data=request.data
+        )
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+        serializer.save()
+
+        return Response(
+            {
+                "message":
+                "Email verified successfully."
+            },
+            status=status.HTTP_200_OK,
+        )
+
+class ResendVerificationView(APIView):
+
+    def post(self, request):
+
+        serializer = ResendVerificationSerializer(
+            data=request.data
+        )
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+        serializer.save()
+
+        return Response(
+            {
+                "message":
+                "Verification email sent."
+            }
         )
