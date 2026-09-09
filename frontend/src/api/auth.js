@@ -14,21 +14,21 @@ export function login(data) {
     );
 }
 
-export function refresh(refreshToken) {
+export function googleLogin(credential) {
+    return client.post("/auth/google/login/", {
+        credential,
+    });
+}
+
+export function refresh() {
     return client.post(
-        "/auth/token/refresh/",
-        {
-            refresh: refreshToken,
-        }
+        "/auth/refresh/"
     );
 }
 
-export function logout(refreshToken) {
+export function logout() {
     return client.post(
-        "/auth/logout/",
-        {
-            refresh: refreshToken,
-        }
+        "/auth/logout/"
     );
 }
 

@@ -1,3 +1,8 @@
+// to add
+// setUser()
+// refreshUser()
+// hasRole()
+
 import {
     createContext,
     useContext,
@@ -9,16 +14,15 @@ import {
 import {
     login as loginRequest,
     logout as logoutRequest,
+    refresh as refreshRequest,
+    googleLogin as googleLoginRequest
 } from "../api/auth";
 
+import client from "../api/client";
+
 import {
-    getAccessToken,
-    getRefreshToken,
-    saveTokens,
-    removeTokens,
-    getUser,
-    saveUser,
-    removeUser,
+    saveAccessToken,
+    removeAccessToken,
 } from "../utils/tokenStorage";
 
 export const AuthContext = createContext(null);
@@ -33,31 +37,62 @@ export function AuthProvider({ children }) {
 
     useEffect(() => {
 
-        const access = getAccessToken();
-        const refresh = getRefreshToken();
-
-        if (access && refresh) {
-
-            // Later we'll validate/refresh the token.
-            // For now we simply assume a saved token
-            // means the user is authenticated.
+        async function restoreSession() {
 
             try {
 
-                const user = getUser();
+                /*
+                |--------------------------------------------------------------------------
+                | Ask Django for a new access token.
+                |
+                | The browser automatically sends the HttpOnly
+                | refresh_token cookie.
+                |--------------------------------------------------------------------------
+                */
 
-                if (user) {
-                    setUser(user);
-                }
+                const response = await refreshRequest();
+
+                const accessToken =
+                    response.data.access;
+
+                saveAccessToken(accessToken);
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Get the current user
+                |--------------------------------------------------------------------------
+                */
+
+                const userResponse = await client.get(
+                    "/auth/me/"
+                );
+
+                setUser(
+                    userResponse.data
+                );
 
             } catch {
-                removeTokens();
-                removeUser();
+
+                /*
+                |--------------------------------------------------------------------------
+                | No valid refresh token/session.
+                |--------------------------------------------------------------------------
+                */
+
+                removeAccessToken();
+
                 setUser(null);
+
+            } finally {
+
+                setLoading(false);
+
             }
+
         }
 
-        setLoading(false);
+        restoreSession();
 
     }, []);
 
@@ -70,7 +105,6 @@ export function AuthProvider({ children }) {
 
         if (
             !response.data.access ||
-            !response.data.refresh ||
             !response.data.user
         ) {
             throw new Error(
@@ -80,14 +114,24 @@ export function AuthProvider({ children }) {
 
         const {
             access,
-            refresh,
             user,
         } = response.data;
 
-        saveTokens(access, refresh);
+        saveAccessToken(access);
 
-        saveUser(user);
+        setUser(user);
 
+        return user;
+    }
+
+    async function loginWithGoogle(credential) {
+        const response = await googleLoginRequest({
+            credential,
+        });
+
+        const { access, user } = response.data;
+
+        saveAccessToken(access);
         setUser(user);
 
         return user;
@@ -103,9 +147,7 @@ export function AuthProvider({ children }) {
 
         finally {
 
-            removeTokens();
-
-            removeUser();
+            removeAccessToken();
 
             setUser(null);
 

@@ -108,7 +108,7 @@ class User(AbstractUser):
         null=True, 
         blank=True
     )
-    phone = models.CharField(max_length=12, blank=False)
+    phone = models.CharField(max_length=12, blank=True)
     address = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -139,6 +139,13 @@ class SellerProfile(models.Model):
     )
     nin = models.CharField(max_length=18, null=True, blank=False)
     nif = models.CharField(max_length=15, null=True, blank=True)
+    business_wilaya = models.ForeignKey(
+        Wilaya, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True
+    )
+    business_address = models.CharField(max_length=255, null=True, blank=True)
     verification_status = models.CharField(max_length=20, choices=VerificationStatus.choices, default=VerificationStatus.unverified)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import PageLoader from "../components/common/PageLoader";
 
-export default function ProtectedRoute({ children, allowUnverified = false }) {
+export default function GuestRoute({ children }) {
 
     const {
         loading,
@@ -14,21 +14,13 @@ export default function ProtectedRoute({ children, allowUnverified = false }) {
         return <PageLoader />;
     }
 
-    if (!isAuthenticated) {
+    if (isAuthenticated && user?.is_email_verified) {
         return (
             <Navigate
-                to="/login"
+                to="/dashboard"
                 replace
             />
         );
-    }
-
-    if (isAuthenticated) {
-        return <Navigate to="/" replace />;
-    }
-
-    if (!user?.is_email_verified && !allowUnverified) {
-        return <Navigate to="/verify-email" replace />;
     }
 
     return children;

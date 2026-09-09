@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework_simplejwt.exceptions import TokenError
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -11,6 +12,8 @@ from .services import EmailService
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from .tokens import email_verification_token
+from google.oauth2 import id_token
+from google.auth.transport import requests
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -27,8 +30,6 @@ class UserSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "wilaya",
-            "is_seller",
-            "is_admin",
         )
         read_only_fields = (
             "id",
@@ -36,8 +37,6 @@ class UserSerializer(serializers.ModelSerializer):
             "is_email_verified",
             "created_at",
             "updated_at",
-            "is_seller",
-            "is_admin",
         )
 
 class SellerSummarySerializer(serializers.ModelSerializer):
@@ -52,6 +51,42 @@ class SellerSummarySerializer(serializers.ModelSerializer):
     def get_is_seller(self, obj):
         return True
 
+class AuthUserSerializer(serializers.ModelSerializer):
+    is_seller = serializers.SerializerMethodField()
+    is_admin = serializers.SerializerMethodField()
+    seller = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "phone",
+            "address",
+            "wilaya",
+            "is_email_verified",
+            "is_seller",
+            "is_admin",
+            "created_at",
+            "seller",
+        )
+
+    def get_is_seller(self, obj):
+        return hasattr(obj, "seller_profile")
+
+    def get_is_admin(self, obj):
+        return obj.groups.filter(name="Admin").exists()
+
+    def get_seller(self, obj):
+        if hasattr(obj, "seller_profile"):
+            return SellerProfileSerializer(
+                obj.seller_profile
+            ).data
+
+        return None        
+
 class SellerProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -62,6 +97,8 @@ class SellerProfileSerializer(serializers.ModelSerializer):
             "verification_status",
             "created_at",
             "updated_at",
+            "business_wilaya",
+            "business_address",
         )
         read_only_fields = (
             "created_at",
@@ -113,6 +150,8 @@ class SellerRegistrationSerializer(serializers.ModelSerializer):
         fields = (
             "nin",
             "nif",
+            "business_wilaya",
+            "business_address",
         )
 
     def validate(self, attrs):
@@ -158,12 +197,42 @@ class LoginSerializer(TokenObtainPairSerializer):
         user = self.user
 
         data["user"] = UserSerializer(user).data
-        if hasattr(user, "seller_profile"):
-            data["seller"] = SellerSummarySerializer(user.seller_profile).data
-        else:
-            data["seller"] = {"is_seller": False}
 
         return data
+
+class GoogleLoginSerializer(serializers.Serializer):
+    credential = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        credential = attrs["credential"]
+
+        try:
+            google_user = id_token.verify_oauth2_token(
+                credential,
+                requests.Request(),
+                settings.GOOGLE_CLIENT_ID,
+            )
+        except ValueError:
+            raise serializers.ValidationError(
+                {"credential": "Invalid Google credential."}
+            )
+
+        email = google_user.get("email")
+        email_verified = google_user.get("email_verified", False)
+
+        if not email:
+            raise serializers.ValidationError(
+                {"credential": "Google account has no email address."}
+            )
+
+        if not email_verified:
+            raise serializers.ValidationError(
+                {"credential": "Google email is not verified."}
+            )
+
+        attrs["google_user"] = google_user
+
+        return attrs
 
 class LogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField()

@@ -31,6 +31,7 @@ import validateRegister from "../../validation/registerValidation";
 import mapBackendErrors from "../../utils/mapBackendErrors";
 
 export default function Register() {
+    const navigate = useNavigate();
     const [form, setForm] = useState({
         first_name: "",
         last_name: "",
@@ -97,12 +98,15 @@ export default function Register() {
             password: form.password,
         };
 
+        console.log("error before try: ", error);
+
         try {
             setLoading(true);
 
             const response = await register(payload);
 
-            console.log(response.data);
+            console.log("response.data: ", response.data);
+            console.log("error: ", error);
 
             navigate("/check-email", {
                 state: {

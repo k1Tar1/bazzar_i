@@ -1,10 +1,12 @@
+from apps.identity.accounts.views import GoogleLoginView
+from apps.identity.accounts.views import RefreshTokenView
 from apps.identity.accounts.views import VerifyEmailView
 from apps.identity.accounts.views import LogoutView
 from rest_framework_simplejwt.views import TokenRefreshView
 from apps.identity.accounts.views import LoginView
 from apps.identity.accounts.views import SellerRegistrationView
 from django.urls import path
-from .views import RegisterView
+from .views import RegisterView, CurrentUserView
 
 urlpatterns = [
     path(
@@ -23,10 +25,15 @@ urlpatterns = [
         name="login",
     ),
     path(
-        "refresh/",
-        TokenRefreshView.as_view(),
-        name="token_refresh",
+        "google/login/", 
+        GoogleLoginView.as_view(), 
+        name="google-login"
     ),
+    # path(
+    #     "refresh/",
+    #     TokenRefreshView.as_view(),
+    #     name="token_refresh",
+    # ),
     path(
         "logout/",
         LogoutView.as_view(),
@@ -36,5 +43,16 @@ urlpatterns = [
         "verify-email/",
         VerifyEmailView.as_view(),
         name="verify-email",
+    ),
+    path(
+        "refresh/",
+        RefreshTokenView.as_view(),
+        name="refresh-token",
+    ),
+
+    path(
+        "current-user/",
+        CurrentUserView.as_view(),
+        name="current-user",
     ),
 ]
