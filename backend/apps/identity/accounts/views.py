@@ -1,6 +1,9 @@
 # reanable the throttle later for production
 # change the response refresh token security from scure = False to True later
 
+from apps.identity.accounts.serializers import UpdateProfileSerializer
+from apps.identity.accounts.serializers import PasswordResetConfirmSerializer
+from apps.identity.accounts.serializers import PasswordResetRequestSerializer
 from django.conf import settings
 from rest_framework.views import APIView
 from apps.identity.accounts.serializers import LogoutSerializer
@@ -13,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
-from .serializers import RegisterSerializer, LoginSerializer, VerifyEmailSerializer, ResendVerificationSerializer, AuthUserSerializer, GoogleLoginSerializer
+from .serializers import RegisterSerializer, LoginSerializer, VerifyEmailSerializer, ResendVerificationSerializer, AuthUserSerializer, GoogleLoginSerializer, ChangePasswordSerializer
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
@@ -105,7 +108,7 @@ class RefreshTokenView(APIView):
                 key="refresh_token",
                 value=data["refresh"],
                 httponly=True,
-                secure=True,
+                secure=False, # for development change it to True later
                 samesite="Lax",
                 max_age=7 * 24 * 60 * 60,
             )
@@ -236,3 +239,67 @@ class CurrentUserView(APIView):
     def get(self, request):
         serializer = AuthUserSerializer(request.user)
         return Response(serializer.data)
+
+    def patch(self, request):
+        serializer = UpdateProfileSerializer(
+            request.user,
+            data=request.data,
+            partial=True,
+        )
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            AuthUserSerializer(request.user).data
+        )
+
+class ChangePasswordView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = ChangePasswordSerializer(
+            data=request.data,
+            context={"request": request},
+        )
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({
+            "detail": "Password changed successfully."
+        })
+
+class PasswordResetRequestView(APIView):
+
+    def post(self, request):
+        serializer = PasswordResetRequestSerializer(
+            data=request.data
+        )
+
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data["email"]
+
+        # Find user and send reset email here.
+
+        return Response({
+            "detail": (
+                "If an account exists with this email, "
+                "a password reset link has been sent."
+            )
+        })
+
+class PasswordResetConfirmView(APIView):
+
+    def post(self, request):
+        serializer = PasswordResetConfirmSerializer(
+            data=request.data
+        )
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({
+            "detail": "Password reset successfully."
+        })

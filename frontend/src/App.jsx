@@ -6,6 +6,16 @@ import ComponentGallery from "./pages/ComponentGallery";
 import CheckEmail from "./pages/Auth/CheckEmail";
 import VerifyEmail from "./pages/Auth/VerifyEmail";
 import Login from "./pages/Auth/Login";
+import CompleteProfile from "./pages/Auth/CompleteProfile";
+import ForgotPassword from "./pages/Auth/ForgotPassword";
+import ResetPassword from "./pages/Auth/ResetPassword";
+
+import DashboardLayout from "./components/dashboard/DashboardLayout";
+
+import DashboardRouter from "./pages/dashboards/DashboardRouter";
+import CustomerDashboard from "./pages/dashboards/CustomerDashboard";
+import SellerDashboard from "./pages/dashboards/SellerDashboard";
+import AdminDashboard from "./pages/dashboards/AdminDashboard";
 
 function App() {
   return (
@@ -32,6 +42,56 @@ function App() {
             <Login />
           </GuestRoute>
         } />
+        <Route path="/complete-profile"
+          element={
+            <ProtectedRoute>
+              <CompleteProfile />
+            </ProtectedRoute>
+          } />
+        <Route path="/forgot-password"
+          element={
+            <GuestRoute>
+              <ForgotPassword />
+            </GuestRoute>
+          } />
+        <Route
+          path="/reset-password/:uid/:token"
+          element={
+            <ResetPassword />
+          }
+        />
+
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardRouter />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route
+            path="/dashboard/customer"
+            element={<CustomerDashboard />}
+          />
+
+          <Route
+            path="/dashboard/seller"
+            element={<SellerDashboard />}
+          />
+
+          <Route
+            path="/dashboard/admin"
+            element={<AdminDashboard />}
+          />
+        </Route>
       </Routes>
     </BrowserRouter>
   )

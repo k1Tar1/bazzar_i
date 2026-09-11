@@ -74,161 +74,161 @@ function notifyTokenRefresh(newToken) {
 }
 
 
-// client.interceptors.response.use(
-//     (response) => {
-//         return response;
-//     },
+client.interceptors.response.use(
+    (response) => {
+        return response;
+    },
 
-//     async (error) => {
+    async (error) => {
 
-//         const originalRequest = error.config;
+        const originalRequest = error.config;
 
-//         /*
-//         |--------------------------------------------------------------------------
-//         | Only handle 401 errors
-//         |--------------------------------------------------------------------------
-//         */
+        /*
+        |--------------------------------------------------------------------------
+        | Only handle 401 errors
+        |--------------------------------------------------------------------------
+        */
 
-//         if (
-//             error.response?.status !== 401 ||
-//             originalRequest._retry
-//         ) {
-//             return Promise.reject(error);
-//         }
-
-
-//         /*
-//         |--------------------------------------------------------------------------
-//         | Don't try to refresh the refresh request itself
-//         |--------------------------------------------------------------------------
-//         */
-
-//         if (
-//             originalRequest.url?.includes(
-//                 "/auth/refresh/"
-//             )
-//         ) {
-//             removeAccessToken();
-
-//             return Promise.reject(error);
-//         }
+        if (
+            error.response?.status !== 401 ||
+            originalRequest._retry
+        ) {
+            return Promise.reject(error);
+        }
 
 
-//         /*
-//         |--------------------------------------------------------------------------
-//         | If another request is already refreshing the token,
-//         | wait for it.
-//         |--------------------------------------------------------------------------
-//         */
+        /*
+        |--------------------------------------------------------------------------
+        | Don't try to refresh the refresh request itself
+        |--------------------------------------------------------------------------
+        */
 
-//         if (isRefreshing) {
+        if (
+            originalRequest.url?.includes(
+                "/auth/refresh/"
+            )
+        ) {
+            removeAccessToken();
 
-//             return new Promise((resolve, reject) => {
-
-//                 subscribeToTokenRefresh(
-//                     (newToken) => {
-
-//                         originalRequest.headers.Authorization =
-//                             `Bearer ${newToken}`;
-
-//                         resolve(
-//                             client(originalRequest)
-//                         );
-//                     }
-//                 );
-
-//             });
-//         }
+            return Promise.reject(error);
+        }
 
 
-//         /*
-//         |--------------------------------------------------------------------------
-//         | Start refreshing
-//         |--------------------------------------------------------------------------
-//         */
+        /*
+        |--------------------------------------------------------------------------
+        | If another request is already refreshing the token,
+        | wait for it.
+        |--------------------------------------------------------------------------
+        */
 
-//         originalRequest._retry = true;
+        if (isRefreshing) {
 
-//         isRefreshing = true;
+            return new Promise((resolve, reject) => {
 
+                subscribeToTokenRefresh(
+                    (newToken) => {
 
-//         try {
+                        originalRequest.headers.Authorization =
+                            `Bearer ${newToken}`;
 
-//             /*
-//             |--------------------------------------------------------------------------
-//             | The refresh token is NOT sent manually.
-//             |
-//             | The browser automatically sends the HttpOnly
-//             | refresh_token cookie because of withCredentials: true.
-//             |--------------------------------------------------------------------------
-//             */
+                        resolve(
+                            client(originalRequest)
+                        );
+                    }
+                );
 
-//             const response = await client.post(
-//                 "/auth/refresh/"
-//             );
-
-
-//             const newAccessToken =
-//                 response.data.access;
+            });
+        }
 
 
-//             /*
-//             |--------------------------------------------------------------------------
-//             | Store the new access token in memory
-//             |--------------------------------------------------------------------------
-//             */
+        /*
+        |--------------------------------------------------------------------------
+        | Start refreshing
+        |--------------------------------------------------------------------------
+        */
 
-//             saveAccessToken(newAccessToken);
+        originalRequest._retry = true;
 
-
-//             /*
-//             |--------------------------------------------------------------------------
-//             | Notify requests that were waiting
-//             |--------------------------------------------------------------------------
-//             */
-
-//             notifyTokenRefresh(
-//                 newAccessToken
-//             );
+        isRefreshing = true;
 
 
-//             /*
-//             |--------------------------------------------------------------------------
-//             | Retry the original request
-//             |--------------------------------------------------------------------------
-//             */
+        try {
 
-//             originalRequest.headers.Authorization =
-//                 `Bearer ${newAccessToken}`;
+            /*
+            |--------------------------------------------------------------------------
+            | The refresh token is NOT sent manually.
+            |
+            | The browser automatically sends the HttpOnly
+            | refresh_token cookie because of withCredentials: true.
+            |--------------------------------------------------------------------------
+            */
+
+            const response = await client.post(
+                "/auth/refresh/"
+            );
 
 
-//             return client(originalRequest);
+            const newAccessToken =
+                response.data.access;
 
-//         } catch (refreshError) {
 
-//             /*
-//             |--------------------------------------------------------------------------
-//             | Refresh token is invalid/expired.
-//             |
-//             | Clear the access token.
-//             |--------------------------------------------------------------------------
-//             */
+            /*
+            |--------------------------------------------------------------------------
+            | Store the new access token in memory
+            |--------------------------------------------------------------------------
+            */
 
-//             removeAccessToken();
+            saveAccessToken(newAccessToken);
 
-//             refreshSubscribers = [];
 
-//             return Promise.reject(
-//                 refreshError
-//             );
+            /*
+            |--------------------------------------------------------------------------
+            | Notify requests that were waiting
+            |--------------------------------------------------------------------------
+            */
 
-//         } finally {
+            notifyTokenRefresh(
+                newAccessToken
+            );
 
-//             isRefreshing = false;
 
-//         }
-//     }
-// );
+            /*
+            |--------------------------------------------------------------------------
+            | Retry the original request
+            |--------------------------------------------------------------------------
+            */
+
+            originalRequest.headers.Authorization =
+                `Bearer ${newAccessToken}`;
+
+
+            return client(originalRequest);
+
+        } catch (refreshError) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Refresh token is invalid/expired.
+            |
+            | Clear the access token.
+            |--------------------------------------------------------------------------
+            */
+
+            removeAccessToken();
+
+            refreshSubscribers = [];
+
+            return Promise.reject(
+                refreshError
+            );
+
+        } finally {
+
+            isRefreshing = false;
+
+        }
+    }
+);
 
 
 export default client;

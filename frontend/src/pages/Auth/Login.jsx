@@ -13,6 +13,10 @@ import GoogleLoginButton from "../../components/auth/GoogleLoginButton";
 
 import { AuthLayout, AuthHeader, AuthFooter } from "../../components/layouts";
 
+console.log(
+    "Google Client ID:",
+    JSON.stringify(import.meta.env.VITE_GOOGLE_CLIENT_ID)
+);
 
 export default function Login() {
     const navigate = useNavigate();

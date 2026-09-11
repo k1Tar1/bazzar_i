@@ -15,10 +15,9 @@ import {
     login as loginRequest,
     logout as logoutRequest,
     refresh as refreshRequest,
-    googleLogin as googleLoginRequest
+    googleLogin as googleLoginRequest,
+    getCurrentUser as getCurrentUserRequest
 } from "../api/auth";
-
-import client from "../api/client";
 
 import {
     saveAccessToken,
@@ -64,9 +63,7 @@ export function AuthProvider({ children }) {
                 |--------------------------------------------------------------------------
                 */
 
-                const userResponse = await client.get(
-                    "/auth/me/"
-                );
+                const userResponse = await getCurrentUserRequest();
 
                 setUser(
                     userResponse.data
@@ -125,9 +122,7 @@ export function AuthProvider({ children }) {
     }
 
     async function loginWithGoogle(credential) {
-        const response = await googleLoginRequest({
-            credential,
-        });
+        const response = await googleLoginRequest(credential);
 
         const { access, user } = response.data;
 
@@ -159,6 +154,7 @@ export function AuthProvider({ children }) {
         loading,
         isAuthenticated,
         login,
+        loginWithGoogle,
         logout,
     }), [
         user,

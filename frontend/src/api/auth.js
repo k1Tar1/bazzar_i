@@ -20,6 +20,14 @@ export function googleLogin(credential) {
     });
 }
 
+export function getCurrentUser() {
+    return client.get("/auth/current-user/");
+}
+
+export function updateCurrentUser(data) {
+    return client.patch("/auth/current-user/", data);
+}
+
 export function refresh() {
     return client.post(
         "/auth/refresh/"
@@ -51,28 +59,19 @@ export function resendVerification(email) {
     );
 }
 
-export function forgotPassword(email) {
-    return client.post(
-        "/auth/forgot-password/",
-        {
-            email,
-        }
-    );
+export function changePassword(data) {
+    return client.post("/auth/change-password/", data);
 }
 
-export function resetPassword({
-    uid,
-    token,
-    password,
-    confirm_password,
-}) {
+export function requestPasswordReset(email) {
+    return client.post("/auth/password-reset/", {
+        email,
+    });
+}
+
+export function confirmPasswordReset(data) {
     return client.post(
-        "/auth/reset-password/",
-        {
-            uid,
-            token,
-            password,
-            confirm_password,
-        }
+        "/auth/password-reset/confirm/",
+        data
     );
 }

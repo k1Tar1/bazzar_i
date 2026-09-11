@@ -6,6 +6,7 @@ import PageLoader from "../components/common/PageLoader";
 export default function GuestRoute({ children }) {
 
     const {
+        user,
         loading,
         isAuthenticated,
     } = useAuth();
@@ -14,7 +15,25 @@ export default function GuestRoute({ children }) {
         return <PageLoader />;
     }
 
-    if (isAuthenticated && user?.is_email_verified) {
+    if (isAuthenticated && user?.profile_complete && !user?.is_email_verified) {
+        return (
+            <Navigate
+                to="/verify-email"
+                replace
+            />
+        );
+    }
+
+    if (isAuthenticated && !user?.profile_complete) {
+        return (
+            <Navigate
+                to="/complete-profile"
+                replace
+            />
+        );
+    }
+
+    if (isAuthenticated && user?.profile_complete && user?.is_email_verified) {
         return (
             <Navigate
                 to="/dashboard"

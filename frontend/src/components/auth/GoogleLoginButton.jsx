@@ -1,13 +1,18 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 
 import { useAuth } from "../../context/AuthContext";
 
+
 export default function GoogleLoginButton() {
     const { loginWithGoogle } = useAuth();
 
+    const navigate = useNavigate();
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+
 
     async function handleSuccess(credentialResponse) {
         setError("");
@@ -20,7 +25,18 @@ export default function GoogleLoginButton() {
         try {
             setLoading(true);
 
-            await loginWithGoogle(credentialResponse.credential);
+            const user = await loginWithGoogle(credentialResponse.credential);
+
+            if (!user.profile_complete) {
+                navigate("/complete-profile");
+                return;
+            }
+
+            if (user.is_seller) {
+                navigate("/dashboard");
+            } else {
+                navigate("/dashboard");
+            }
         } catch (error) {
             const responseData = error.response?.data;
 

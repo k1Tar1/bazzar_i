@@ -10,20 +10,15 @@ import { AuthProvider } from "./context/AuthContext";
 ReactDOM.createRoot(
   document.getElementById("root")
 ).render(
-  <React.StrictMode>
+  // <React.StrictMode>
 
-    <GoogleOAuthProvider clientId="import.meta.env.VITE_GOOGLE_CLIENT_ID">
-      <AuthProvider>
+  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+    <AuthProvider>
 
-        <App />
+      <App />
 
-      </AuthProvider>
-    </GoogleOAuthProvider>
+    </AuthProvider>
+  </GoogleOAuthProvider>
 
-  </React.StrictMode>
-);
-
-console.log(
-  "Google Client ID:",
-  import.meta.env.VITE_GOOGLE_CLIENT_ID
+  // </React.StrictMode>
 );

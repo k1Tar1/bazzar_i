@@ -11,7 +11,7 @@ from .validators import validate_phone
 from .services import EmailService
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
-from .tokens import email_verification_token
+from .tokens import email_verification_token, password_reset_token_generator
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
@@ -55,6 +55,8 @@ class AuthUserSerializer(serializers.ModelSerializer):
     is_seller = serializers.SerializerMethodField()
     is_admin = serializers.SerializerMethodField()
     seller = serializers.SerializerMethodField()
+    profile_complete = serializers.SerializerMethodField()
+
 
     class Meta:
         model = User
@@ -71,6 +73,7 @@ class AuthUserSerializer(serializers.ModelSerializer):
             "is_admin",
             "created_at",
             "seller",
+            "profile_complete",
         )
 
     def get_is_seller(self, obj):
@@ -85,7 +88,14 @@ class AuthUserSerializer(serializers.ModelSerializer):
                 obj.seller_profile
             ).data
 
-        return None        
+        return None
+    
+    def get_profile_complete(self, obj):
+        return bool(
+            obj.phone
+            and obj.address
+            and obj.wilaya
+        )
 
 class SellerProfileSerializer(serializers.ModelSerializer):
 
@@ -233,6 +243,115 @@ class GoogleLoginSerializer(serializers.Serializer):
         attrs["google_user"] = google_user
 
         return attrs
+
+class UpdateProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            "first_name",
+            "last_name",
+            "phone",
+            "address",
+            "wilaya",
+        )
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(
+        write_only=True
+    )
+    new_password = serializers.CharField(
+        write_only=True
+    )
+    confirm_password = serializers.CharField(
+        write_only=True
+    )
+
+    def validate(self, attrs):
+        user = self.context["request"].user
+
+        if not user.check_password(attrs["old_password"]):
+            raise serializers.ValidationError({
+                "old_password": "Current password is incorrect."
+            })
+
+        if attrs["new_password"] != attrs["confirm_password"]:
+            raise serializers.ValidationError({
+                "confirm_password": "Passwords do not match."
+            })
+
+        validate_password(
+            attrs["new_password"],
+            user=user
+        )
+
+        return attrs
+
+    def save(self, **kwargs):
+        user = self.context["request"].user
+
+        user.set_password(self.validated_data["new_password"])
+        user.save(update_fields=["password"])
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    uid = serializers.CharField(write_only=True)
+    token = serializers.CharField(write_only=True)
+
+    new_password = serializers.CharField(
+        write_only=True
+    )
+
+    confirm_password = serializers.CharField(
+        write_only=True
+    )
+
+    def validate(self, attrs):
+        try:
+            uid = urlsafe_base64_decode(
+                attrs["uid"]
+            ).decode()
+
+            user = User.objects.get(pk=uid)
+
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            raise serializers.ValidationError({
+                "uid": "Invalid password reset link."
+            })
+
+        if not password_reset_token_generator.check_token(
+            user,
+            attrs["token"]
+        ):
+            raise serializers.ValidationError({
+                "token": "Invalid or expired password reset link."
+            })
+
+        if attrs["new_password"] != attrs["confirm_password"]:
+            raise serializers.ValidationError({
+                "confirm_password": "Passwords do not match."
+            })
+
+        validate_password(
+            attrs["new_password"],
+            user=user
+        )
+
+        attrs["user"] = user
+
+        return attrs
+
+    def save(self, **kwargs):
+        user = self.validated_data["user"]
+
+        user.set_password(
+            self.validated_data["new_password"]
+        )
+
+        user.save()
+
+        return user
 
 class LogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField()
