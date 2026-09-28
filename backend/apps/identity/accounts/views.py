@@ -1,6 +1,12 @@
 # reanable the throttle later for production
 # change the response refresh token security from scure = False to True later
 
+import secrets
+from django.http import request
+from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
+from django.db import transaction
+from django.contrib.auth.models import Group
 from apps.identity.accounts.serializers import UpdateProfileSerializer
 from apps.identity.accounts.serializers import PasswordResetConfirmSerializer
 from apps.identity.accounts.serializers import PasswordResetRequestSerializer
@@ -32,10 +38,7 @@ class RegisterView(generics.CreateAPIView):
     # throttle_classes = [
     #     RegisterThrottle
     # ]
-class SellerRegistrationView(CreateAPIView):
-    serializer_class = SellerRegistrationSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
+        
 class LoginView(TokenObtainPairView):
     serializer_class = LoginSerializer
 

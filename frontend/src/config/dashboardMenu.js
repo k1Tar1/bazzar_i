@@ -4,8 +4,11 @@ import {
     ShoppingCart,
     Store,
     Users,
-    Settings,
-    Ticket,
+    Headphones,
+    User,
+    LayoutDashboard,
+    ShieldCheck,
+    FileCheck,
 } from "lucide-react";
 
 export const dashboardMenus = {
@@ -21,39 +24,48 @@ export const dashboardMenus = {
             icon: ShoppingCart,
         },
         {
-            label: "Settings",
-            path: "/account/settings",
-            icon: Settings,
+            label: "Profile",
+            path: "/account/profile",
+            icon: User,
         },
     ],
 
     seller: [
         {
             label: "Dashboard",
-            path: "/seller/dashboard",
+            path: "/admin/dashboard",
             icon: LayoutDashboard,
         },
         {
-            label: "My Store",
-            path: "/seller/store",
-            icon: Store,
+            label: "Overview",
+            path: "/seller",
+        },
+        {
+            label: "Stores",
+            path: "/seller/stores",
         },
         {
             label: "Products",
             path: "/seller/products",
-            icon: Package,
         },
         {
             label: "Orders",
             path: "/seller/orders",
-            icon: ShoppingCart,
         },
         {
-            label: "Settings",
-            path: "/seller/settings",
-            icon: Settings,
+            label: "Analytics",
+            path: "/seller/analytics",
+        },
+        {
+            label: "Subscription",
+            path: "/seller/subscription",
+        },
+        {
+            label: "Payments",
+            path: "/seller/payments",
         },
     ],
+
 
     admin: [
         {
@@ -67,9 +79,15 @@ export const dashboardMenus = {
             icon: Users,
         },
         {
-            label: "Stores",
-            path: "/admin/stores",
-            icon: Store,
+            label: "Identity Verification",
+            path: "/admin/id-verifications",
+            icon: ShieldCheck,
+        },
+
+        {
+            label: "Business Registration",
+            path: "/admin/registration-verifications",
+            icon: FileCheck,
         },
         {
             label: "Orders",
@@ -79,12 +97,7 @@ export const dashboardMenus = {
         {
             label: "Support",
             path: "/admin/support",
-            icon: Ticket,
-        },
-        {
-            label: "Settings",
-            path: "/admin/settings",
-            icon: Settings,
+            icon: Headphones,
         },
     ],
 };

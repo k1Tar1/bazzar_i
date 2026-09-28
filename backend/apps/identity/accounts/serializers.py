@@ -1,10 +1,10 @@
+from django.db.models.fields import related_descriptors
 from django.conf import settings
 from rest_framework_simplejwt.exceptions import TokenError
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import Group
 from rest_framework import serializers
-from .models import User, SellerProfile
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.db import transaction
 from .validators import validate_phone
@@ -14,6 +14,8 @@ from django.utils.http import urlsafe_base64_decode
 from .tokens import email_verification_token, password_reset_token_generator
 from google.oauth2 import id_token
 from google.auth.transport import requests
+from .models import User
+from apps.identity.seller.serializers import SellerProfileSerializer
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -38,18 +40,6 @@ class UserSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         )
-
-class SellerSummarySerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = SellerProfile
-        fields = (
-            "is_seller",
-            "verification_status",
-        )
-    
-    def get_is_seller(self, obj):
-        return True
 
 class AuthUserSerializer(serializers.ModelSerializer):
     is_seller = serializers.SerializerMethodField()
@@ -97,24 +87,8 @@ class AuthUserSerializer(serializers.ModelSerializer):
             and obj.wilaya
         )
 
-class SellerProfileSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = SellerProfile
-        fields = (
-            "nin",
-            "nif",
-            "verification_status",
-            "created_at",
-            "updated_at",
-            "business_wilaya",
-            "business_address",
-        )
-        read_only_fields = (
-            "created_at",
-            "verification_status",
-            "updated_at",
-        )
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
@@ -153,46 +127,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         return user
 
-class SellerRegistrationSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = SellerProfile
-        fields = (
-            "nin",
-            "nif",
-            "business_wilaya",
-            "business_address",
-        )
-
-    def validate(self, attrs):
-        user = self.context["request"].user
-
-        if not user.is_active or not user.is_email_verified:
-            raise serializers.ValidationError(
-                "You must be an active and email-verified user to register as a seller."
-            )
-
-        if hasattr(user, "seller_profile"):
-            raise serializers.ValidationError(
-                "You are already registered as a seller."
-            )
-
-        return attrs
-
-    @transaction.atomic
-    def create(self, validated_data):
-
-        user = self.context["request"].user
-
-        seller_profile = SellerProfile.objects.create(
-            user=user,
-            **validated_data
-        )
-
-        seller_group = Group.objects.get_or_create(name="Seller")
-        user.groups.add(seller_group)
-
-        return seller_profile
 
 class LoginSerializer(TokenObtainPairSerializer):
 
@@ -435,3 +369,4 @@ class ResendVerificationSerializer(serializers.Serializer):
         EmailService.send_verification_email(
             self.user
         )
+

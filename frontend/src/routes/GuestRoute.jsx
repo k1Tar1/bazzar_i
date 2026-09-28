@@ -42,5 +42,5 @@ export default function GuestRoute({ children }) {
         );
     }
 
-    return children;
+    return children ?? < Outlet />;
 }

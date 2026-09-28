@@ -132,6 +132,10 @@ export function AuthProvider({ children }) {
         return user;
     }
 
+    function updateUser(updatedUser) {
+        setUser(updatedUser);
+    }
+
     async function logout() {
 
         try {
@@ -155,6 +159,7 @@ export function AuthProvider({ children }) {
         isAuthenticated,
         login,
         loginWithGoogle,
+        updateUser,
         logout,
     }), [
         user,

@@ -1,3 +1,4 @@
+from apps.identity.accounts.views import SellerProfileView
 from apps.identity.accounts.views import PasswordResetRequestView
 from apps.identity.accounts.views import PasswordResetConfirmView
 from apps.identity.accounts.views import GoogleLoginView
@@ -10,16 +11,14 @@ from apps.identity.accounts.views import SellerRegistrationView
 from django.urls import path
 from .views import RegisterView, CurrentUserView, ChangePasswordView
 
+from .views import SellerIdVerificationView
+
+
 urlpatterns = [
     path(
         "register/",
         RegisterView.as_view(),
         name="register"
-    ),
-    path(
-        "register/seller/",
-        SellerRegistrationView.as_view(),
-        name="seller_register"
     ),
     path(
         "login/",
@@ -73,5 +72,5 @@ urlpatterns = [
         "password-reset/confirm/",
         PasswordResetConfirmView.as_view(),
         name="password-reset-confirm",
-    ),
+    )
 ]
