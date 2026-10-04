@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class SubscriptionsConfig(AppConfig):
+class RegionsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "apps.identity.subscriptions"
+    name = "apps.identity.regions"

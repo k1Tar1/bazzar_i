@@ -1,6 +1,7 @@
 from django.apps import AppConfig
 
 
-class SellerConfig(AppConfig):
+class AdminConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "apps.identity.seller"
+    name = "apps.identity.admin"
+    label = "identity_admin"

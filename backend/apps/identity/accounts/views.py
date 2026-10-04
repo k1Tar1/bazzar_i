@@ -14,7 +14,6 @@ from django.conf import settings
 from rest_framework.views import APIView
 from apps.identity.accounts.serializers import LogoutSerializer
 from rest_framework import status
-from apps.identity.accounts.serializers import SellerRegistrationSerializer
 from rest_framework.generics import CreateAPIView
 from rest_framework import generics
 from rest_framework import permissions

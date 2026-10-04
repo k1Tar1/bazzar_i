@@ -15,7 +15,6 @@ from .tokens import email_verification_token, password_reset_token_generator
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from .models import User
-from apps.identity.seller.serializers import SellerProfileSerializer
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -74,6 +73,7 @@ class AuthUserSerializer(serializers.ModelSerializer):
 
     def get_seller(self, obj):
         if hasattr(obj, "seller_profile"):
+            from apps.identity.seller.serializers import SellerProfileSerializer
             return SellerProfileSerializer(
                 obj.seller_profile
             ).data

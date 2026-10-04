@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.identity.accounts.models import (
+from apps.identity.seller.models import (
     SellerIdVerificationDemand,
     SellerRegistrationVerificationDemand,
 )
@@ -67,4 +67,4 @@ class AdminRegistrationVerificationSerializer(
         return (
             f"{obj.seller.user.first_name} "
             f"{obj.seller.user.last_name}"
-        ).strip()
+        ).strip()   

@@ -318,16 +318,13 @@ class AdminRegistrationVerificationApproveView(APIView):
             status=status.HTTP_200_OK,
         )
 
-class AdminRegistrationVerificationApproveView(APIView):
+class AdminRegistrationVerificationRejectView(APIView):
     permission_classes = [IsAdminUser]
 
-    @transaction.atomic
     def post(self, request, pk):
         try:
-            demand = (
-                SellerRegistrationVerificationDemand.objects
-                .select_related("seller")
-                .get(pk=pk)
+            demand = SellerRegistrationVerificationDemand.objects.get(
+                pk=pk
             )
         except SellerRegistrationVerificationDemand.DoesNotExist:
             return Response(
@@ -337,55 +334,49 @@ class AdminRegistrationVerificationApproveView(APIView):
 
         if (
             demand.status
-            != SellerRegistrationVerificationDemand
-            .VerificationDemandStatus.pending
+            != SellerRegistrationVerificationDemand.VerificationDemandStatus.pending
         ):
             return Response(
                 {
                     "detail": (
-                        "Only pending verification "
-                        "requests can be approved."
+                        "Only pending verification requests "
+                        "can be rejected."
                     )
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if VerifiedSellerRegistry.objects.filter(
-            seller=demand.seller
-        ).exists():
+        feedback = request.data.get("feedback")
+
+        if not feedback or not feedback.strip():
             return Response(
                 {
-                    "detail": (
-                        "This seller's business registration "
-                        "is already verified."
-                    )
+                    "feedback": [
+                        "Feedback is required when rejecting "
+                        "a verification request."
+                    ]
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        verified_registry = VerifiedSellerRegistry.objects.create(
-            seller=demand.seller,
-            business_registration_image=(
-                demand.business_registration_image
-            ),
-            nif=demand.nif,
-            accepted_by=request.user,
-            verification_type=(
-                VerifiedSellerRegistry
-                .VerificationType
-                .online
-            ),
+        demand.status = (
+            SellerRegistrationVerificationDemand
+            .VerificationDemandStatus.rejected
         )
 
-        demand.delete()
+        demand.feedback = feedback.strip()
+
+        demand.save(
+            update_fields=[
+                "status",
+                "feedback",
+                "updated_at",
+            ]
+        )
 
         return Response(
             {
-                "detail": (
-                    "Business registration verification "
-                    "approved successfully."
-                ),
-                "id": verified_registry.id,
+                "detail": "Business registration verification rejected.",
             },
             status=status.HTTP_200_OK,
         )

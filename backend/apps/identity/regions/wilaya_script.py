@@ -1,4 +1,4 @@
-from .models import Wilaya
+from apps.identity.regions.models import Wilaya
 
 wilayas = [
     (1, "Adrar", "أدرار"),

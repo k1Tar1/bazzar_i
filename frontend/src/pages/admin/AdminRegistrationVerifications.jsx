@@ -5,9 +5,9 @@ import {
     getRegistrationVerificationRequests,
 } from "../../api/admin";
 
-import Card from "../../components/common/Card";
-import Alert from "../../components/common/Alert";
-import Spinner from "../../components/common/Spinner";
+import Card from "../../components/ui/Card";
+import Alert from "../../components/ui/Alert";
+import Spinner from "../../components/ui/Spinner";
 
 
 export default function AdminRegistrationVerifications() {

@@ -1,4 +1,3 @@
-from apps.identity.accounts.views import SellerProfileView
 from apps.identity.accounts.views import PasswordResetRequestView
 from apps.identity.accounts.views import PasswordResetConfirmView
 from apps.identity.accounts.views import GoogleLoginView
@@ -7,11 +6,8 @@ from apps.identity.accounts.views import VerifyEmailView
 from apps.identity.accounts.views import LogoutView
 from rest_framework_simplejwt.views import TokenRefreshView
 from apps.identity.accounts.views import LoginView
-from apps.identity.accounts.views import SellerRegistrationView
 from django.urls import path
 from .views import RegisterView, CurrentUserView, ChangePasswordView
-
-from .views import SellerIdVerificationView
 
 
 urlpatterns = [

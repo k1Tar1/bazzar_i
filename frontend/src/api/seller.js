@@ -12,6 +12,10 @@ export function updateSellerProfile(data) {
     return client.patch("/seller/profile/", data);
 }
 
+export function getSellerVerification() {
+    return client.get("/seller/verification/");
+}
+
 export function createSellerIdVerification(data) {
     return client.post(
         "/seller/id-verification/",

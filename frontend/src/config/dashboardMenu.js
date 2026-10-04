@@ -6,7 +6,6 @@ import {
     Users,
     Headphones,
     User,
-    LayoutDashboard,
     ShieldCheck,
     FileCheck,
 } from "lucide-react";
@@ -33,36 +32,43 @@ export const dashboardMenus = {
     seller: [
         {
             label: "Dashboard",
-            path: "/admin/dashboard",
+            path: "/seller/dashboard",
             icon: LayoutDashboard,
         },
         {
             label: "Overview",
             path: "/seller",
+            icon: LayoutDashboard,
         },
         {
             label: "Stores",
             path: "/seller/stores",
+            icon: Store,
         },
         {
             label: "Products",
             path: "/seller/products",
+            icon: Package,
         },
         {
             label: "Orders",
             path: "/seller/orders",
+            icon: ShoppingCart,
         },
         {
             label: "Analytics",
             path: "/seller/analytics",
+            icon: LayoutDashboard,
         },
         {
             label: "Subscription",
             path: "/seller/subscription",
+            icon: LayoutDashboard,
         },
         {
             label: "Payments",
             path: "/seller/payments",
+            icon: LayoutDashboard,
         },
     ],
 

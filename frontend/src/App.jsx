@@ -35,7 +35,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* <Route path="/" element={<ComponentGallery />} /> */}
+        <Route path="/gallery" element={<ComponentGallery />} />
         <Route path="/register" element={
           <GuestRoute>
             <Register />
