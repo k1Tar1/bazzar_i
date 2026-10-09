@@ -103,7 +103,7 @@ export default function SellerStatus() {
                 </h2>
 
                 <div className="mt-4 space-y-4">
-                    <div>
+                    {/* <div>
                         <p className="text-sm text-secondary-500">
                             NIN
                         </p>
@@ -121,7 +121,7 @@ export default function SellerStatus() {
                         <p className="mt-1 font-medium text-secondary-900">
                             {seller.nif}
                         </p>
-                    </div>
+                    </div> */}
 
                     <div>
                         <p className="text-sm text-secondary-500">
@@ -163,7 +163,7 @@ export default function SellerStatus() {
                     <Button
                         loading={loading}
                         leftIcon={<Save size={18} />}
-                        variant="secondary"
+                        // variant="secondary"
                         onClick={() => navigate("/account/seller-profile")}
                     >
                         Edit Seller Information

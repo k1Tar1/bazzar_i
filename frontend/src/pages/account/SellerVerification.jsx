@@ -41,6 +41,10 @@ export default function SellerVerification() {
     const [errors, setErrors] = useState({});
     const [generalError, setGeneralError] = useState("");
 
+    console.log(values.id_image, values.id_image instanceof File);
+    console.log(values.selfie_image, values.selfie_image instanceof File);
+
+
 
     useEffect(() => {
         async function loadVerification() {
@@ -130,6 +134,16 @@ export default function SellerVerification() {
     const identityVerified =
         identityStatus === "verified";
 
+    const needsRegistration =
+        registrationStatus === "unverified" ||
+        registrationStatus === "rejected";
+
+    const registrationPending =
+        registrationStatus === "pending";
+
+    const registrationVerified =
+        registrationStatus === "verified";
+
     const registrationCanBeSubmitted =
         verification.registration.can_submit;
 
@@ -213,7 +227,8 @@ export default function SellerVerification() {
 
 
             if (
-                hasRegistrationData &&
+                hasRegistrationData
+                &&
                 registrationCanBeSubmitted
             ) {
                 const registrationData =
@@ -440,7 +455,7 @@ export default function SellerVerification() {
                     BUSINESS REGISTRATION
                 ========================================== */}
 
-                {registrationCanBeSubmitted && (
+                {needsRegistration && (
                     <section>
                         <div className="mb-5">
                             <h2 className="text-lg font-semibold text-secondary-900">
@@ -516,7 +531,7 @@ export default function SellerVerification() {
                     REGISTRATION PENDING
                 ========================================== */}
 
-                {registrationStatus === "pending" && (
+                {registrationPending && (
                     <Alert type="info">
                         <strong>
                             Business registration pending
@@ -535,7 +550,7 @@ export default function SellerVerification() {
                     REGISTRATION VERIFIED
                 ========================================== */}
 
-                {registrationStatus === "verified" && (
+                {registrationVerified && (
                     <Alert type="success">
                         <strong>
                             Business registration verified
@@ -549,13 +564,15 @@ export default function SellerVerification() {
                 )}
 
 
-                <Button
-                    type="submit"
-                    loading={submitting}
-                    fullWidth
-                >
-                    Submit Verification
-                </Button>
+                {needsIdentity && needsRegistration && (
+                    <Button
+                        type="submit"
+                        loading={submitting}
+                        fullWidth
+                    >
+                        Submit Verification
+                    </Button>
+                )}
 
             </form>
         </Card>

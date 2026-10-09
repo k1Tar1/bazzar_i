@@ -167,8 +167,8 @@ export default function AdminRegistrationVerificationDetail() {
                             "/admin/registration-verifications"
                         )
                     }
+                    leftIcon="ArrowLeft"
                 >
-                    <ArrowLeft className="h-4 w-4" />
                     Back
                 </Button>
 
@@ -205,8 +205,9 @@ export default function AdminRegistrationVerificationDetail() {
                             "/admin/registration-verifications"
                         )
                     }
+                    leftIcon="ArrowLeft"
                 >
-                    <ArrowLeft className="h-4 w-4" />
+                    Back
                 </Button>
 
                 <div>
@@ -365,8 +366,8 @@ export default function AdminRegistrationVerificationDetail() {
                                 loading={actionLoading}
                                 disabled={actionLoading}
                                 onClick={handleApprove}
+                                leftIcon="Check"
                             >
-                                <Check className="h-4 w-4" />
                                 Approve
                             </Button>
 
@@ -379,8 +380,8 @@ export default function AdminRegistrationVerificationDetail() {
                                     setFeedbackError(null);
                                     setShowRejectForm(true);
                                 }}
+                                leftIcon="X"
                             >
-                                <X className="h-4 w-4" />
                                 Reject
                             </Button>
 
@@ -423,8 +424,8 @@ export default function AdminRegistrationVerificationDetail() {
                                     loading={actionLoading}
                                     disabled={actionLoading}
                                     onClick={handleReject}
+                                    leftIcon="X"
                                 >
-                                    <X className="h-4 w-4" />
                                     Confirm Rejection
                                 </Button>
 

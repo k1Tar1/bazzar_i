@@ -92,7 +92,12 @@ export default function UserMenu() {
                                 Seller Status
                             </Link>
 
-                            <Link to="/account/seller-verification">
+                            <Link
+                                to="/account/seller-verification"
+                                onClick={() => setOpen(false)}
+                                className="flex items-center gap-3 px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-100"
+                            >
+                                <Store size={17} />
                                 Identity Verification
                             </Link>
 

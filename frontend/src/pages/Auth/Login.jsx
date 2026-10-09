@@ -58,13 +58,11 @@ export default function Login() {
                 return;
             }
 
-            // Redirect based on the user's role.
-            if (user.is_seller) {
-                navigate("/");
-            } else {
-                navigate("/");
-            }
-        } catch (error) {
+            navigate("/dashboard");
+
+        }
+
+        catch (error) {
             const responseData = error.response?.data;
 
             if (responseData?.detail) {

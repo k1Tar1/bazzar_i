@@ -92,17 +92,19 @@ export function validateChangePasswordForm(values) {
 export function validateSellerProfileForm(values) {
     const errors = {};
 
-    if (!values.nin.trim()) {
-        errors.nin = "NIN is required.";
-    } else if (!/^\d{18}$/.test(values.nin.trim())) {
-        errors.nin = "NIN must contain exactly 18 digits.";
-    }
+    // NIN and NIF are removed from the seller registration since they became part of the selller validation process
 
-    if (!values.nif.trim()) {
-        errors.nif = "NIF is required.";
-    } else if (!/^\d{9}$/.test(values.nif.trim())) {
-        errors.nif = "NIF must contain exactly 9 digits.";
-    }
+    // if (!values.nin.trim()) {
+    //     errors.nin = "NIN is required.";
+    // } else if (!/^\d{18}$/.test(values.nin.trim())) {
+    //     errors.nin = "NIN must contain exactly 18 digits.";
+    // }
+
+    // if (!values.nif.trim()) {
+    //     errors.nif = "NIF is required.";
+    // } else if (!/^\d{9}$/.test(values.nif.trim())) {
+    //     errors.nif = "NIF must contain exactly 9 digits.";
+    // }
 
     if (!values.business_address.trim()) {
         errors.business_address = "Address is required.";

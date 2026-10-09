@@ -160,8 +160,8 @@ export default function AdminIdVerificationDetail() {
                     onClick={() =>
                         navigate("/admin/id-verifications")
                     }
+                    leftIcon="ArrowLeft"
                 >
-                    <ArrowLeft className="h-4 w-4" />
                     Back
                 </Button>
 
@@ -195,8 +195,9 @@ export default function AdminIdVerificationDetail() {
                     onClick={() =>
                         navigate("/admin/id-verifications")
                     }
+                    leftIcon="ArrowLeft"
                 >
-                    <ArrowLeft className="h-4 w-4" />
+                    Back
                 </Button>
 
                 <div>
@@ -214,19 +215,23 @@ export default function AdminIdVerificationDetail() {
 
             {/* Messages */}
 
-            {error && (
-                <Alert
-                    type="error"
-                    message={error}
-                />
-            )}
+            {
+                error && (
+                    <Alert
+                        type="error"
+                        message={error}
+                    />
+                )
+            }
 
-            {success && (
-                <Alert
-                    type="success"
-                    message={success}
-                />
-            )}
+            {
+                success && (
+                    <Alert
+                        type="success"
+                        message={success}
+                    />
+                )
+            }
 
 
             {/* Seller information */}
@@ -343,7 +348,8 @@ export default function AdminIdVerificationDetail() {
 
             {/* Existing rejection feedback */}
 
-            {request.status === "rejected" &&
+            {
+                request.status === "rejected" &&
                 request.feedback && (
                     <Card>
 
@@ -356,97 +362,100 @@ export default function AdminIdVerificationDetail() {
                         </p>
 
                     </Card>
-                )}
+                )
+            }
 
 
             {/* Actions */}
 
-            {isPending && (
-                <Card>
+            {
+                isPending && (
+                    <Card>
 
-                    <h2 className="text-lg font-semibold text-secondary-900">
-                        Review Decision
-                    </h2>
-
-
-                    {!showRejectForm && (
-                        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-
-                            <Button
-                                variant="success"
-                                loading={actionLoading}
-                                disabled={actionLoading}
-                                onClick={handleApprove}
-                            >
-                                <Check className="h-4 w-4" />
-                                Approve
-                            </Button>
+                        <h2 className="text-lg font-semibold text-secondary-900">
+                            Review Decision
+                        </h2>
 
 
-                            <Button
-                                variant="danger"
-                                disabled={actionLoading}
-                                onClick={() => {
-                                    setFeedback("");
-                                    setFeedbackError(null);
-                                    setShowRejectForm(true);
-                                }}
-                            >
-                                <X className="h-4 w-4" />
-                                Reject
-                            </Button>
+                        {!showRejectForm && (
+                            <div className="mt-5 flex flex-col gap-3 sm:flex-row">
 
-                        </div>
-                    )}
+                                <Button
+                                    variant="success"
+                                    loading={actionLoading}
+                                    disabled={actionLoading}
+                                    onClick={handleApprove}
+                                    leftIcon="Check"
+                                >
+                                    Approve
+                                </Button>
 
-
-                    {showRejectForm && (
-                        <div className="mt-5 space-y-4">
-
-                            <Input
-                                label="Rejection feedback"
-                                value={feedback}
-                                onChange={(event) =>
-                                    setFeedback(event.target.value)
-                                }
-                                error={feedbackError}
-                                helperText="Explain what the seller needs to correct before resubmitting."
-                            />
-
-
-                            <div className="flex flex-col gap-3 sm:flex-row">
 
                                 <Button
                                     variant="danger"
-                                    loading={actionLoading}
-                                    disabled={actionLoading}
-                                    onClick={handleReject}
-                                >
-                                    <X className="h-4 w-4" />
-                                    Confirm Rejection
-                                </Button>
-
-
-                                <Button
-                                    variant="outline"
                                     disabled={actionLoading}
                                     onClick={() => {
-                                        setShowRejectForm(false);
                                         setFeedback("");
                                         setFeedbackError(null);
+                                        setShowRejectForm(true);
                                     }}
+                                    leftIcon="X"
                                 >
-                                    Cancel
+                                    Reject
                                 </Button>
 
                             </div>
+                        )}
 
-                        </div>
-                    )}
 
-                </Card>
-            )}
+                        {showRejectForm && (
+                            <div className="mt-5 space-y-4">
 
-        </div>
+                                <Input
+                                    label="Rejection feedback"
+                                    value={feedback}
+                                    onChange={(event) =>
+                                        setFeedback(event.target.value)
+                                    }
+                                    error={feedbackError}
+                                    helperText="Explain what the seller needs to correct before resubmitting."
+                                />
+
+
+                                <div className="flex flex-col gap-3 sm:flex-row">
+
+                                    <Button
+                                        variant="danger"
+                                        loading={actionLoading}
+                                        disabled={actionLoading}
+                                        onClick={handleReject}
+                                        leftIcon="X"
+                                    >
+                                        Confirm Rejection
+                                    </Button>
+
+
+                                    <Button
+                                        variant="outline"
+                                        disabled={actionLoading}
+                                        onClick={() => {
+                                            setShowRejectForm(false);
+                                            setFeedback("");
+                                            setFeedbackError(null);
+                                        }}
+                                    >
+                                        Cancel
+                                    </Button>
+
+                                </div>
+
+                            </div>
+                        )}
+
+                    </Card>
+                )
+            }
+
+        </div >
     );
 }

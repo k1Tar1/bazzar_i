@@ -110,26 +110,6 @@ export default function SellerOnboarding() {
                         </p>
                     </div>
 
-                    <Input
-                        label="NIN"
-                        name="nin"
-                        value={values.nin}
-                        onChange={handleChange}
-                        error={errors.nin}
-                        helperText="Enter your 18-digit National Identification Number."
-                        required
-                    />
-
-                    <Input
-                        label="NIF"
-                        name="nif"
-                        value={values.nif}
-                        onChange={handleChange}
-                        error={errors.nif}
-                        helperText="Enter your 9-digit Tax Identification Number."
-                        required
-                    />
-
                     <Select
                         label="Business Wilaya"
                         name="business_wilaya"

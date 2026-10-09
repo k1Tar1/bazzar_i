@@ -143,7 +143,8 @@ class SellerIdVerificationView(APIView):
 
         serializer = (
             SellerIdVerificationDemandSerializer(
-                data=request.data
+                data=request.data,
+                context={"request": request},
             )
         )
 
@@ -221,6 +222,7 @@ class SellerIdVerificationView(APIView):
                 demand,
                 data=request.data,
                 partial=False,
+                context={"request": request},
             )
         )
 
@@ -236,7 +238,8 @@ class SellerIdVerificationView(APIView):
 
         return Response(
             SellerIdVerificationDemandSerializer(
-                demand
+                demand,
+                context={"request": request}
             ).data
         )
 

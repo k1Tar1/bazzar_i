@@ -114,9 +114,9 @@ export default function SellerProfile() {
         return <PageLoader />;
     }
 
-    const locked =
-        verificationStatus === "pending" ||
-        verificationStatus === "verified";
+    // const locked =
+    //     verificationStatus === "pending" ||
+    //     verificationStatus === "verified";
 
     return (
         <div className="mx-auto max-w-2xl space-y-6">
@@ -146,11 +146,11 @@ export default function SellerProfile() {
                 </Alert>
             )}
 
-            {locked && (
-                <Alert variant="info">
-                    Your identity information cannot be changed while your seller verification is pending or completed.
-                </Alert>
-            )}
+            {/* {locked && ( */}
+            {/* <Alert variant="info">
+                Your identity information cannot be changed while your seller verification is pending or completed.
+            </Alert> */}
+            {/* )} */}
 
             <Card>
                 <form
@@ -163,7 +163,7 @@ export default function SellerProfile() {
                         value={values.business_phone}
                         onChange={handleChange}
                         error={errors.business_phone}
-                        disabled={locked}
+                        // disabled={locked}
                         required
                     />
 
@@ -187,17 +187,16 @@ export default function SellerProfile() {
                         required
                     />
 
-                    {!locked && (
-                        <div className="flex justify-end">
-                            <Button
-                                type="submit"
-                                loading={loading}
-                                leftIcon={<Save size={18} />}
-                            >
-                                Save Changes
-                            </Button>
-                        </div>
-                    )}
+
+                    <div className="flex justify-end">
+                        <Button
+                            type="submit"
+                            loading={loading}
+                            leftIcon={<Save size={18} />}
+                        >
+                            Save Changes
+                        </Button>
+                    </div>
                 </form>
             </Card>
         </div>

@@ -3,12 +3,9 @@ from django.contrib.auth.models import Group
 from rest_framework import serializers
 from .models import SellerIdVerificationDemand, SellerProfile, VerifiedSellerId, SellerRegistrationVerificationDemand, VerifiedSellerRegistry
 from apps.identity.accounts.validators import validate_phone
-from apps.identity.accounts.serializers import AuthUserSerializer
-
 
 class SellerProfileSerializer(serializers.ModelSerializer):
 
-    user = AuthUserSerializer(read_only=True)
     business_phone = serializers.CharField(
         validators=[validate_phone],
     )
