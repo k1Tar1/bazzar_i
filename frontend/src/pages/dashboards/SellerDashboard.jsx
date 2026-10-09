@@ -75,7 +75,7 @@ export default function SellerDashboard() {
                             </p>
 
                             <Link
-                                to="/account/seller-status"
+                                to="/seller/account/seller-verification"
                                 className="mt-3 inline-block text-sm font-medium text-primary-600 hover:underline"
                             >
                                 View verification status
@@ -103,7 +103,7 @@ export default function SellerDashboard() {
                             </p>
 
                             <Link
-                                to="/account/seller-profile"
+                                to="/seller/account/seller-status"
                                 className="mt-3 inline-block text-sm font-medium text-primary-600 hover:underline"
                             >
                                 Review seller profile
@@ -131,10 +131,10 @@ export default function SellerDashboard() {
                             </p>
 
                             <Link
-                                to="/account/seller-profile"
+                                to="/seller/account/seller-verification"
                                 className="mt-3 inline-block text-sm font-medium text-primary-600 hover:underline"
                             >
-                                Complete seller profile
+                                Complete seller verification
                             </Link>
                         </div>
                     </div>

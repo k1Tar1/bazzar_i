@@ -455,7 +455,7 @@ export default function SellerVerification() {
                     BUSINESS REGISTRATION
                 ========================================== */}
 
-                {needsRegistration && (
+                {(!registrationPending && !registrationVerified) && (
                     <section>
                         <div className="mb-5">
                             <h2 className="text-lg font-semibold text-secondary-900">
@@ -564,7 +564,7 @@ export default function SellerVerification() {
                 )}
 
 
-                {needsIdentity && needsRegistration && (
+                {(needsIdentity || needsRegistration) && (
                     <Button
                         type="submit"
                         loading={submitting}

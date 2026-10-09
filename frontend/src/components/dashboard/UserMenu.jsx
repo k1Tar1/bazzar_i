@@ -84,7 +84,7 @@ export default function UserMenu() {
                     {user?.is_seller && (
                         <>
                             <Link
-                                to="/account/seller-status"
+                                to="/seller/account/seller-status"
                                 onClick={() => setOpen(false)}
                                 className="flex items-center gap-3 px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-100"
                             >
@@ -93,16 +93,16 @@ export default function UserMenu() {
                             </Link>
 
                             <Link
-                                to="/account/seller-verification"
+                                to="/seller/account/seller-verification"
                                 onClick={() => setOpen(false)}
                                 className="flex items-center gap-3 px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-100"
                             >
                                 <Store size={17} />
-                                Identity Verification
+                                Seller Verification
                             </Link>
 
                             <Link
-                                to="/account/seller-profile"
+                                to="/seller/account/seller-profile"
                                 onClick={() => setOpen(false)}
                                 className="flex items-center gap-3 px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-100"
                             >

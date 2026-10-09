@@ -66,7 +66,7 @@ export default function CompleteProfile() {
             console.log("Profile updated:", response.data);
 
             // Go to the main application
-            navigate("/", { replace: true });
+            navigate("/dashboard", { replace: true });
 
         } catch (error) {
             const responseData = error.response?.data;
@@ -97,7 +97,7 @@ export default function CompleteProfile() {
                 >
                     {error && (
                         <Alert
-                            variant="danger"
+                            variant="warning"
                             message={error}
                         />
                     )}

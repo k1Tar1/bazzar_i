@@ -1,10 +1,14 @@
-from django.contrib import admin
+from django.contrib import admin, messages
+from django.core.exceptions import ValidationError
 
-from .models import (
-    BillingRecord,
+from apps.identity.subscriptions.models import (
     Subscription,
-    SubscriptionHistory,
     SubscriptionPlan,
+    SubscriptionRequest,
+)
+from apps.identity.subscriptions.services.subscriptions import (
+    approve_subscription_request,
+    reject_subscription_request,
 )
 
 
@@ -15,15 +19,11 @@ class SubscriptionPlanAdmin(admin.ModelAdmin):
         "price",
         "currency",
         "duration_days",
-        "max_stores",
-        "max_products_per_store",
-        "max_pending_orders_total",
-        "custom_url_allowed",
         "is_free",
         "is_active",
+        "sort_order",
     )
-
-    list_filter = ("is_free", "is_active", "custom_url_allowed")
+    list_filter = ("is_free", "is_active")
     search_fields = ("name", "slug")
     prepopulated_fields = {"slug": ("name",)}
     ordering = ("sort_order", "price")
@@ -39,60 +39,84 @@ class SubscriptionAdmin(admin.ModelAdmin):
         "current_period_end",
         "grace_ends_at",
     )
-
     list_filter = ("status", "plan")
-    search_fields = (
-        "seller__user__email",
-        "plan__name",
-    )
+    search_fields = ("seller__user__email", "plan__name")
     readonly_fields = ("created_at", "updated_at")
 
 
-@admin.register(SubscriptionHistory)
-class SubscriptionHistoryAdmin(admin.ModelAdmin):
+@admin.action(description="Confirm cash received and approve requests")
+def approve_requests(modeladmin, request, queryset):
+    approved = 0
+
+    for subscription_request in queryset:
+        try:
+            approve_subscription_request(
+                subscription_request,
+                admin_user=request.user,
+            )
+            approved += 1
+        except ValidationError as exc:
+            modeladmin.message_user(
+                request,
+                f"Request #{subscription_request.pk}: {exc}",
+                level=messages.ERROR,
+            )
+
+    if approved:
+        modeladmin.message_user(
+            request,
+            f"{approved} subscription request(s) approved.",
+            level=messages.SUCCESS,
+        )
+
+
+@admin.action(description="Reject selected subscription requests")
+def reject_requests(modeladmin, request, queryset):
+    rejected = 0
+
+    for subscription_request in queryset:
+        try:
+            reject_subscription_request(
+                subscription_request,
+                admin_user=request.user,
+                note="Rejected by administrator.",
+            )
+            rejected += 1
+        except ValidationError as exc:
+            modeladmin.message_user(
+                request,
+                f"Request #{subscription_request.pk}: {exc}",
+                level=messages.ERROR,
+            )
+
+    if rejected:
+        modeladmin.message_user(
+            request,
+            f"{rejected} subscription request(s) rejected.",
+            level=messages.SUCCESS,
+        )
+
+
+@admin.register(SubscriptionRequest)
+class SubscriptionRequestAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "subscription",
-        "event_type",
-        "previous_plan",
-        "plan",
-        "created_at",
-    )
-
-    list_filter = ("event_type", "plan")
-    readonly_fields = (
-        "subscription",
-        "event_type",
-        "previous_plan",
-        "plan",
-        "period_start",
-        "period_end",
-        "actor",
-        "note",
-        "created_at",
-    )
-
-    def has_add_permission(self, request):
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        return False
-
-
-@admin.register(BillingRecord)
-class BillingRecordAdmin(admin.ModelAdmin):
-    list_display = (
-        "subscription",
-        "plan",
-        "amount",
-        "currency",
+        "requested_plan",
+        "payment_method",
         "status",
-        "paid_at",
-        "created_at",
+        "requested_at",
+        "payment_reported_at",
     )
-
-    list_filter = ("status", "currency", "plan")
+    list_filter = ("status", "payment_method", "requested_plan")
     search_fields = (
         "subscription__seller__user__email",
-        "provider_reference",
+        "requested_plan__name",
     )
-    readonly_fields = ("created_at", "updated_at")
+    readonly_fields = (
+        "requested_at",
+        "payment_reported_at",
+        "decided_at",
+        "decided_by",
+    )
+    actions = [approve_requests, reject_requests]

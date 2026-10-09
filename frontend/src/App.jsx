@@ -131,7 +131,7 @@ function App() {
             />
 
             <Route
-              path="/account/seller-profile"
+              path="/seller/account/seller-profile"
               element={<SellerProfile />}
             />
 
@@ -146,12 +146,12 @@ function App() {
         <Route element={<SellerRoute allowSellerOnly={true} />}>
           <Route element={<DashboardLayout />}>
             <Route
-              path="/account/seller-status"
+              path="/seller/account/seller-status"
               element={<SellerStatus />}
             />
 
             <Route
-              path="/account/seller-verification"
+              path="/seller/account/seller-verification"
               element={<SellerVerification />}
             />
 

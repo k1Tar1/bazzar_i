@@ -1,3 +1,4 @@
+from apps.identity.subscriptions.services.subscriptions import assign_free_subscription
 from django.db.models import Q
 from django.db import transaction
 
@@ -131,6 +132,8 @@ class AdminIdVerificationApproveView(APIView):
         )
 
         demand.delete()
+
+        assign_free_subscription(seller=demand.seller)
 
         return Response(
             {

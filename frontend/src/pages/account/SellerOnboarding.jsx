@@ -57,7 +57,7 @@ export default function SellerOnboarding() {
 
             setSuccess(true);
 
-            navigate("/account/seller-verification");
+            navigate("/seller/account/seller-verification");
         } catch (err) {
             setErrors(
                 formatApiErrors(err.response?.data)

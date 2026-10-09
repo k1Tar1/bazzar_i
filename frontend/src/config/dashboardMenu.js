@@ -13,7 +13,7 @@ import {
 export const dashboardMenus = {
     customer: [
         {
-            label: "Dashboard",
+            label: "Overview",
             path: "/dashboard/customer",
             icon: LayoutDashboard,
         },
@@ -30,11 +30,6 @@ export const dashboardMenus = {
     ],
 
     seller: [
-        {
-            label: "Dashboard",
-            path: "/seller/dashboard",
-            icon: LayoutDashboard,
-        },
         {
             label: "Overview",
             path: "/seller",
@@ -75,7 +70,7 @@ export const dashboardMenus = {
 
     admin: [
         {
-            label: "Dashboard",
+            label: "Overview",
             path: "/admin/dashboard",
             icon: LayoutDashboard,
         },

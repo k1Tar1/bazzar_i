@@ -17,9 +17,9 @@ export default function DashboardSwitcher() {
 
     let currentDashboard = "customer";
 
-    if (location.pathname.startsWith("/admin/dashboard")) {
+    if (location.pathname.startsWith("/admin/")) {
         currentDashboard = "admin";
-    } else if (location.pathname.startsWith("/seller/dashboard")) {
+    } else if (location.pathname.startsWith("/seller/")) {
         currentDashboard = "seller";
     }
 

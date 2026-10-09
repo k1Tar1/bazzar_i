@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Q
@@ -10,7 +11,6 @@ from django.utils import timezone
 class SubscriptionPlan(models.Model):
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=100, unique=True)
-
     description = models.TextField(blank=True)
 
     price = models.DecimalField(
@@ -19,12 +19,7 @@ class SubscriptionPlan(models.Model):
         default=Decimal("0.00"),
         validators=[MinValueValidator(Decimal("0.00"))],
     )
-    currency = models.CharField(
-        max_length=3,
-        default="DZD",
-    )
-
-    # None means there is no fixed billing period.
+    currency = models.CharField(max_length=3, default="DZD")
     duration_days = models.PositiveIntegerField(
         null=True,
         blank=True,
@@ -51,33 +46,27 @@ class SubscriptionPlan(models.Model):
                 fields=["is_free"],
                 condition=Q(is_free=True),
                 name="one_free_subscription_plan",
-            ),
+            )
         ]
 
-    def __str__(self):
-        return self.name
-
     def clean(self):
-        from django.core.exceptions import ValidationError
-
         if self.is_free:
             if self.price != Decimal("0.00"):
                 raise ValidationError({
-                    "price": "The Free plan must have a price of zero."
+                    "price": "The Free plan must cost zero."
                 })
 
             if self.duration_days is not None:
                 raise ValidationError({
-                    "duration_days": (
-                        "The Free plan must not have a fixed duration."
-                    )
+                    "duration_days": "The Free plan has no fixed duration."
                 })
         elif not self.duration_days:
             raise ValidationError({
-                "duration_days": (
-                    "Paid plans must have a positive duration."
-                )
+                "duration_days": "Paid plans need a positive duration."
             })
+
+    def __str__(self):
+        return self.name
 
 
 class Subscription(models.Model):
@@ -85,14 +74,11 @@ class Subscription(models.Model):
         ACTIVE = "active", "Active"
         GRACE_PERIOD = "grace_period", "Grace period"
 
-    # Assumes SellerProfile is in the seller app.
-    # OneToOneField guarantees one current subscription per seller.
     seller = models.OneToOneField(
-        "apps.identity.seller.SellerProfile",
+        "seller.SellerProfile",
         on_delete=models.PROTECT,
         related_name="subscription",
     )
-
     plan = models.ForeignKey(
         SubscriptionPlan,
         on_delete=models.PROTECT,
@@ -123,90 +109,33 @@ class Subscription(models.Model):
         return f"{self.seller} — {self.plan.name}"
 
 
-class SubscriptionHistory(models.Model):
-    class EventType(models.TextChoices):
-        FREE_ASSIGNED = "free_assigned", "Free plan assigned"
-        UPGRADED = "upgraded", "Plan upgraded"
-        RENEWED = "renewed", "Subscription renewed"
-        GRACE_STARTED = "grace_started", "Grace period started"
-        DOWNGRADED_TO_FREE = (
-            "downgraded_to_free",
-            "Returned to Free plan",
-        )
-
-    subscription = models.ForeignKey(
-        Subscription,
-        on_delete=models.PROTECT,
-        related_name="history",
-    )
-
-    event_type = models.CharField(
-        max_length=30,
-        choices=EventType.choices,
-    )
-
-    previous_plan = models.ForeignKey(
-        SubscriptionPlan,
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True,
-        related_name="previous_plan_events",
-    )
-
-    plan = models.ForeignKey(
-        SubscriptionPlan,
-        on_delete=models.PROTECT,
-        related_name="subscription_events",
-    )
-
-    period_start = models.DateTimeField(null=True, blank=True)
-    period_end = models.DateTimeField(null=True, blank=True)
-
-    actor = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="subscription_history_events",
-    )
-
-    note = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["-created_at"]
-
-    def __str__(self):
-        return f"{self.event_type}: {self.plan.name}"
-
-
-class BillingRecord(models.Model):
+class SubscriptionRequest(models.Model):
     class Status(models.TextChoices):
-        PENDING = "pending", "Pending"
-        PAID = "paid", "Paid"
-        FAILED = "failed", "Failed"
+        PENDING = "pending", "Awaiting payment"
+        PAYMENT_REPORTED = "payment_reported", "Payment reported"
+        APPROVED = "approved", "Approved"
+        REJECTED = "rejected", "Rejected"
         CANCELLED = "cancelled", "Cancelled"
-        REFUNDED = "refunded", "Refunded"
+
+    class PaymentMethod(models.TextChoices):
+        OFFICE_CASH = "office_cash", "Cash at office"
+        CASH_TRANSFER = "cash_transfer", "Cash transfer"
 
     subscription = models.ForeignKey(
         Subscription,
         on_delete=models.PROTECT,
-        related_name="billing_records",
+        related_name="requests",
     )
-
-    # Preserve what was purchased even if the subscription changes plans.
-    plan = models.ForeignKey(
+    requested_plan = models.ForeignKey(
         SubscriptionPlan,
         on_delete=models.PROTECT,
-        related_name="billing_records",
+        related_name="subscription_requests",
     )
 
-    amount = models.DecimalField(
-        max_digits=12,
-        decimal_places=2,
-        validators=[MinValueValidator(Decimal("0.00"))],
+    payment_method = models.CharField(
+        max_length=20,
+        choices=PaymentMethod.choices,
     )
-    currency = models.CharField(max_length=3, default="DZD")
 
     status = models.CharField(
         max_length=20,
@@ -214,23 +143,44 @@ class BillingRecord(models.Model):
         default=Status.PENDING,
     )
 
-    period_start = models.DateTimeField(null=True, blank=True)
-    period_end = models.DateTimeField(null=True, blank=True)
-
-    provider_reference = models.CharField(
-        max_length=255,
+    requested_at = models.DateTimeField(auto_now_add=True)
+    payment_reported_at = models.DateTimeField(
+        null=True,
         blank=True,
     )
-
-    paid_at = models.DateTimeField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    decided_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+    decided_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="subscription_requests_decided",
+    )
+    admin_note = models.TextField(blank=True)
 
     class Meta:
-        ordering = ["-created_at"]
+        ordering = ["-requested_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["subscription"],
+                condition=Q(
+                    status__in=["pending", "payment_reported"]
+                ),
+                name="one_pending_subscription_request",
+            )
+        ]
+
+    def clean(self):
+        if self.requested_plan_id and self.requested_plan.is_free:
+            raise ValidationError({
+                "requested_plan": "You can only request a paid plan."
+            })
 
     def __str__(self):
         return (
-            f"{self.plan.name}: {self.amount} "
-            f"{self.currency} ({self.status})"
+            f"{self.subscription.seller} → "
+            f"{self.requested_plan.name} ({self.status})"
         )
